@@ -13,12 +13,14 @@ int main(int argc, char** argv)
   ros::init(argc,argv,"lattice_traj_gen");
   ros::NodeHandle nh;
   common::VehicleState start(0,0,0,0,0.1); 
-  common::VehicleState goal(6,4,0.1,0.2,0.1); 
+  common::VehicleState goal(1,1,0.0,0.1,0.1); 
 
   common::CubicSpline curvature = common::initCurvature(start,goal);
 
 
   common::VehicleState integrated_state = libmm::motionModel(start,goal,dt,curvature);
+
+  ROS_INFO_STREAM("lattice_traj_gen::node state after motion model "<<integrated_state);
 
 
   return 0;

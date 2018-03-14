@@ -14,6 +14,7 @@
 #include <ros/ros.h>
 #include <algorithm>
 #include <math.h>
+#include <fstream>
 
 #include <lattice_trajectory_gen/libtraj_gen_common.h>
 
@@ -21,6 +22,8 @@ namespace common =  libtraj_gen_common;
 
 namespace libtraj_motion_model
 {
+
+  std::ofstream fhandler;
 
   double max_kappa = 0.39;
   double min_kappa = -0.39;

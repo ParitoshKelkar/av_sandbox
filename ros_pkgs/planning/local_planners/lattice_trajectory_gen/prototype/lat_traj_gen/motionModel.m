@@ -36,7 +36,7 @@ state_hist = [current_state];
     next_state_dt.vel = vel;
 
 
-    next_state_dt = responseToControls(current_state,next_state_dt,dt);
+    %next_state_dt = responseToControls(current_state,next_state_dt,dt);
     next_state_dt.vel = 0.1;
     current_state = next_state_dt;
     T = T + dt;
