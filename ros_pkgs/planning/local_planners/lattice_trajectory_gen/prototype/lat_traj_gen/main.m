@@ -10,17 +10,17 @@ start.kappa = 0.0;
 start.vel = 0.1;
 
 
-%goal.sx = 6;
-%goal.sy = 4;
-%goal.theta = 0;
-%goal.kappa = 0.2;
-%goal.vel = 0.1;
-
-goal.sx = 1;
-goal.sy = 1;
+goal.sx = 6;
+goal.sy = 4;
 goal.theta = 0;
-goal.kappa = 0.1;
+goal.kappa = 0.2;
 goal.vel = 0.1;
+
+%goal.sx = 0.5;
+%goal.sy = 0.5;
+%goal.theta = 0;
+%goal.kappa = 0.1;
+%goal.vel = 0.1;
 
 t = dt;
 horizon = sqrt((start.sx - goal.sx)^2 + (start.sy - goal.sy)^2)/goal.vel;

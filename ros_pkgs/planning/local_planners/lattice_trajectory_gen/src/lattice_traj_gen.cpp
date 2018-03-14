@@ -12,8 +12,9 @@ int main(int argc, char** argv)
   double dt = 0.1;
   ros::init(argc,argv,"lattice_traj_gen");
   ros::NodeHandle nh;
-  common::VehicleState start(0,0,0,0,0.1); 
-  common::VehicleState goal(1,1,0.0,0.1,0.1); 
+
+  common::VehicleState start(0,0,0,0,0.1);  // x,y,theta,kappa,vel
+  common::VehicleState goal(6,4,0.0,0.2,0.1); 
 
 
 

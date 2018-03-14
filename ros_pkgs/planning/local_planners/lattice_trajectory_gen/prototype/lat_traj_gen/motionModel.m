@@ -41,8 +41,6 @@ state_hist = [current_state];
     current_state = next_state_dt;
     T = T + dt;
     state_hist =[state_hist;current_state];
-    disp('sy');
-    disp(next_state_dt.sy);
     disp('kappa');
     disp(next_state_dt.kappa);
     iter=iter+1;
