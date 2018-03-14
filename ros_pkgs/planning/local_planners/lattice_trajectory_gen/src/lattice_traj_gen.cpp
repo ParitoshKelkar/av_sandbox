@@ -15,6 +15,8 @@ int main(int argc, char** argv)
   common::VehicleState start(0,0,0,0,0.1); 
   common::VehicleState goal(1,1,0.0,0.1,0.1); 
 
+
+
   common::CubicSpline curvature = common::initCurvature(start,goal);
 
 
