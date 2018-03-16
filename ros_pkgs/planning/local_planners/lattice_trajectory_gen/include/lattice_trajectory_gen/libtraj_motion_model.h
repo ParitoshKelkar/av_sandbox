@@ -15,6 +15,7 @@
 #include <algorithm>
 #include <math.h>
 #include <fstream>
+#include <Eigen/Dense>
 
 #include <lattice_trajectory_gen/libtraj_gen_common.h>
 
