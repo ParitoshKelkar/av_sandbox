@@ -97,6 +97,19 @@ namespace libtraj_motion_model
   common::VehicleState responseToControls(common::VehicleState, common::VehicleState,double);
 
 
+  /**
+  * @brief approximates the inverse jacobian and 
+  *        solves for the correction parameter 
+  *
+  * @param  
+  *
+  * @return   common::CubicSpline
+  * 
+  * @throws Exception TODO cant calculate inverse of jacobian 
+  */
+  common::CubicSpline generateCorrection(const common::VehicleState&, const common::VehicleState&, const common::VehicleState&, double, common::CubicSpline);
+
+
 
 };
 

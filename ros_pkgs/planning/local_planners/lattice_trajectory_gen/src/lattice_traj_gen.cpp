@@ -23,6 +23,7 @@ int main(int argc, char** argv)
 
   common::VehicleState integrated_state = libmm::motionModel(start,goal,dt,curvature);
   ROS_INFO_STREAM("lattice_traj_gen::node state after motion model "<<integrated_state);
+  common::CubicSpline delta_param = libmm::generateCorrection(start,goal,integrated_state,dt,curvature);
 
 
   return 0;
