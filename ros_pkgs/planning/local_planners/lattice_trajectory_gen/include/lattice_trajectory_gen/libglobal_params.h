@@ -28,6 +28,11 @@ namespace global_params
   float kappa_v = 0.1485;
   float v_safety = 2;
 
+  double x_tolerance = 0.05; //m 
+  double y_tolerance = 0.05; //m 
+  double theta_tolerance = 0.1; //radians
+  double kappa_tolerance = 0.01; // rad/m <?>
+
 };
 
 #endif /* LIBGLOBAL_PARAMS_H */

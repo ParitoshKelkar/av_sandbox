@@ -21,9 +21,30 @@ int main(int argc, char** argv)
   common::CubicSpline curvature = common::initCurvature(start,goal);
 
 
+  ROS_INFO_STREAM(" -- BEGINNING FIRST INTEGRATION WITH SPLINE "<<curvature<<"--\n");
   common::VehicleState integrated_state = libmm::motionModel(start,goal,dt,curvature);
   ROS_INFO_STREAM("lattice_traj_gen::node state after motion model "<<integrated_state);
-  common::CubicSpline delta_param = libmm::generateCorrection(start,goal,integrated_state,dt,curvature);
+  ROS_INFO(" - BEGINNING CCRRECTIONS - ");
+  bool converged = false;
+  int converge_epochs = 0;
+
+  while( !converged && converge_epochs < 5)
+  {
+    common::CubicSpline delta_param = libmm::generateCorrection(start,goal,integrated_state,dt,curvature);
+    curvature.p1 = curvature.p1 - delta_param.p1;
+    curvature.p2 = curvature.p2 - delta_param.p2;
+    curvature.s = curvature.s - delta_param.s;
+
+    ROS_INFO_STREAM(" - new spline "<<curvature<<"-");
+    ROS_INFO("lattice_traj_gen::node running MM with adjusted curvature");
+    integrated_state = libmm::motionModel(start,goal,dt,curvature);
+    ROS_INFO_STREAM("lattice_traj_gen::node state after motion model "<<integrated_state);
+    ROS_INFO(" - END ITER_EPOCH %d -",converge_epochs);
+    ROS_INFO("\n");
+    converged = common::hasConverged(goal,integrated_state);
+    converge_epochs+=1;
+
+  }
 
 
   return 0;

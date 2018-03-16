@@ -16,6 +16,12 @@
 namespace libtraj_gen_common
 {
 
+
+  double x_tolerance = 0.05; //m 
+  double y_tolerance = 0.05; //m 
+  double theta_tolerance = 0.1; //radians
+  double kappa_tolerance = 0.01; // rad/m <?>
+
  /*
   *this declaration contains the same variable as mentioned in 
   *the dissesration of Howard - diff from the a,b,c,s representation of 
@@ -81,6 +87,19 @@ namespace libtraj_gen_common
   * @throws Exception
   */
   CubicSpline initCurvature(const VehicleState, const VehicleState);
+
+
+  /**
+  * @brief  ** self explanatory **
+  *
+  * @param  const VehicleState
+  *         const VehicleState
+  *
+  * @return bool
+  * 
+  * @throws Exception
+  */
+  bool hasConverged(const VehicleState, const VehicleState);
   
 
 };
