@@ -24,7 +24,7 @@ int main(int argc, char** argv)
   ROS_INFO_STREAM(" -- BEGINNING FIRST INTEGRATION WITH SPLINE "<<curvature<<"--\n");
   common::VehicleState integrated_state = libmm::motionModel(start,goal,dt,curvature);
   ROS_INFO_STREAM("lattice_traj_gen::node state after motion model "<<integrated_state);
-  ROS_INFO(" - BEGINNING CCRRECTIONS - ");
+  ROS_INFO(" - BEGINNING CORRECTIONS - ");
   bool converged = false;
   int converge_epochs = 0;
 
@@ -43,6 +43,11 @@ int main(int argc, char** argv)
     ROS_INFO("\n");
     converged = common::hasConverged(goal,integrated_state);
     converge_epochs+=1;
+  }
+  if (converged)
+  {
+    // publish to rviz 
+    // publish corresponding twist messages 
 
   }
 

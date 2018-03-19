@@ -16,6 +16,8 @@ function [next_state_dt] = responseToControls(current_state,next_state_dt,dt)
   kappa = min(kappa,maxKappa);
   kappa = max(kappa,minKappa);
 
+  next_state_dt.kappa = kappa;
+
   accCmd = (next_state_dt.vel - current_state.vel)/dt;
 
   global maxAcc;
@@ -28,6 +30,5 @@ function [next_state_dt] = responseToControls(current_state,next_state_dt,dt)
   vel = current_state.vel + accCmd*dt;
 
   next_state_dt.vel = vel;
-  next_state_dt.kappa = kappa;
 
 end

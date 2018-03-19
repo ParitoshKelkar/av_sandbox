@@ -18,6 +18,8 @@ global v_scl
 global kappa_v ;
 global v_safety;
 
+global scl_safety_factor
+
 maxKappa = 0.39;
 minKappa = -0.39;
 
@@ -32,3 +34,5 @@ b_scl = -0.0049;
 v_scl = 4;
 kappa_v = 0.1485;
 v_safety = 2;
+
+scl_safety_factor = 1;
