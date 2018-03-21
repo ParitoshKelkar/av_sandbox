@@ -41,6 +41,7 @@ namespace libtraj_motion_model
   double v_scl = 4;
   double kappa_v = 0.1485;
   double v_safety = 2;
+  double safety_factor = 1;
 
   /**
   * @brief  computes horizon and runs motion model until then 
@@ -108,6 +109,22 @@ namespace libtraj_motion_model
   * @throws Exception TODO cant calculate inverse of jacobian 
   */
   common::CubicSpline generateCorrection(const common::VehicleState&, const common::VehicleState&, const common::VehicleState&, double, common::CubicSpline);
+
+
+  /**
+  * @brief  implements simple cubic polynomial 
+  *         cont in acc 
+  *
+  * @param  const common::CubicSpline - curvature 
+  *         const common::VehicleState - goal 
+  *         const common::VehicleState - start
+  *         double - elapsedTime
+  *
+  * @return double - nextVel
+  * 
+  * @throws Exception
+  */
+  double getNextVelocity(const common::CubicSpline, const common::VehicleState, const common::VehicleState, double);
 
 
 
