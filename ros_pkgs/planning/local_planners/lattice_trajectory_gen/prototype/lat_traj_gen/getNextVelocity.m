@@ -3,12 +3,11 @@ function v_new = getNextVelocity(current_state,goal,dt,T,p,dist_covered)
   tf = p.s/goal.vel;
   elapsed_time = T;
 
-  A = [ 1 0 0 0;  0 1 0  0 ; 1 tf tf*tf tf*tf*tf; 0 1 2*tf 3*tf*tf];
-
+  A = [ 1 0 0 0;  0 1 0  0 ; 1 (tf) (tf)*(tf) (tf)^3; 0 1 2*(tf) 3*((tf)^2)];
 
 
   % invert matrix to get coefficients 
-  coeff = inv(A)*[0 current_state.vel p.s - dist_covered goal.vel]';
+  coeff = inv(A)*[0 current_state.vel p.s  goal.vel]';
 
   
 

@@ -15,7 +15,7 @@ function [next_state_dt] = speedControlLogic(next_state_dt)
   %end
   
   %next_state_dt.vel = vel_cmd;
-  next_state_dt.vel = min(abs((next_state_dt.kappa - a_scl)/b_scl), vel_cmd);
+  %next_state_dt.vel = min(abs((next_state_dt.kappa - a_scl)/b_scl), vel_cmd);
     
   %disp(vel_cmd);
 end   

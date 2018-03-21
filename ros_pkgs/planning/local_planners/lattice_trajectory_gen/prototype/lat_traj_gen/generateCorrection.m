@@ -4,10 +4,10 @@ function delta_param = generateCorrection(start,goal,integrated_state,dt,p_init)
 % approx jacobian 
 % the jacobian is of the form - 4 x 4; the state doesnt include - following nagy kelly 
 % verify mc naughton implementation - kappa not included 
-a_perturb = 0.0001;
-b_perturb = 0.0001;
+a_perturb = 0.001;
+b_perturb = 0.001;
 c_perturb = 0.001;
-s_perturb = 0.001;
+s_perturb = 0.01;
 
 J = zeros(3,3);
 % second parameter col 
