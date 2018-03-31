@@ -1,5 +1,7 @@
 #include <lattice_trajectory_gen/libtraj_motion_model.h>
 #include <lattice_trajectory_gen/libtraj_gen_common.h>
+#include <geometry_msgs/PoseWithCovarianceStamped.h>
+#include <geometry_msgs/Twist.h>
 
 #include <iostream>
 #include <ros/ros.h>
@@ -7,14 +9,25 @@
 namespace common =  libtraj_gen_common;
 namespace libmm =  libtraj_motion_model;
 
+void amclPoseCb(const geometry_msgs::PoseWithCovarianceStamped&);
+
+void amclPoseCb(const geometry_msgs::PoseWithCovarianceStamped& current_pose)
+{
+
+}
+
 int main(int argc, char** argv)
 {
   double dt = 0.1;
   ros::init(argc,argv,"lattice_traj_gen");
   ros::NodeHandle nh;
 
-  common::VehicleState start(0,0,0,0,0.1);  // x,y,theta,kappa,vel
-  common::VehicleState goal(6,4,0.0,0.2,0.1); 
+  common::VehicleState start(25,70,0,0,0.1);  // x,y,theta,kappa,vel
+  common::VehicleState goal(25+6,70+4,0.0,0.2,0.1); 
+
+
+  ros::Subscriber amcl_pose_sub = nh.subscribe("/amcl_pose",10,amclPoseCb);
+  ros::Publisher twist_pub = nh.advertise<geometry_msgs::Twist>("/cmd_vel",10);
 
 
 
@@ -46,8 +59,10 @@ int main(int argc, char** argv)
   }
   if (converged)
   {
+
     // publish to rviz 
     // publish corresponding twist messages 
+
 
   }
 

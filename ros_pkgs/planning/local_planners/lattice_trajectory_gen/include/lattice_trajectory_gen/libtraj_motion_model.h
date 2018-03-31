@@ -127,6 +127,20 @@ namespace libtraj_motion_model
   double getNextVelocity(const common::CubicSpline, const common::VehicleState, const common::VehicleState, double);
 
 
+  /**
+  * @brief  this function is to run the algorithm step by step 
+  *         will be used in generating line strip for rviz
+  *         and for sending next commands for sim
+  *
+  * @param  
+  *
+  * @return   common::VehicleState
+  * 
+  * @throws Exception
+  */
+  common::VehicleState getNextState(const common::VehicleState, const common::VehicleState, double, const common::CubicSpline, double);
+
+
 
 };
 
