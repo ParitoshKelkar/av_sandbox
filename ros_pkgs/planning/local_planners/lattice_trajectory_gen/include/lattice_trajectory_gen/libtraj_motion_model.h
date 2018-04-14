@@ -116,7 +116,7 @@ namespace libtraj_motion_model
   *         cont in acc 
   *
   * @param  const common::CubicSpline - curvature 
-  *         const common::VehicleState - goal 
+  *         double - goal vel
   *         const common::VehicleState - start
   *         double - elapsedTime
   *
@@ -124,7 +124,7 @@ namespace libtraj_motion_model
   * 
   * @throws Exception
   */
-  double getNextVelocity(const common::CubicSpline, const common::VehicleState, const common::VehicleState, double);
+  double getNextVelocity(const common::CubicSpline, double, const common::VehicleState, double);
 
 
   /**
@@ -138,7 +138,7 @@ namespace libtraj_motion_model
   * 
   * @throws Exception
   */
-  common::VehicleState getNextState(const common::VehicleState, const common::VehicleState, double, const common::CubicSpline, double);
+  common::VehicleState getNextState(const common::VehicleState, double, double, const common::CubicSpline, double);
 
 
 

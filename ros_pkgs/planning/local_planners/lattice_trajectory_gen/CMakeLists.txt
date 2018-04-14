@@ -12,11 +12,22 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  prius_msgs
+  av_planning_msgs
+  nav_msgs
 )
 
+add_message_files(
+  FILES 
+  #VehicleStateCubicSpline.msg
+)
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
+#generate_messages(
+  #DEPENDENCIES
+  #std_msgs
+#)
 
 ###################################
 ## catkin specific configuration ##
@@ -30,7 +41,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
   INCLUDE_DIRS include
   #LIBRARIES libtraj_common libtraj_motion_model
-  CATKIN_DEPENDS geometry_msgs roscpp rospy std_msgs
+  CATKIN_DEPENDS geometry_msgs roscpp rospy std_msgs message_runtime nav_msgs
   DEPENDS system_lib
 )
 
