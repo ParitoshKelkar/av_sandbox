@@ -1,15 +1,16 @@
 #include <iostream>
 #include <prius_msgs/Control.h>
-#include <lattice_trajectory_gen/VehicleStateCubicSpline.h>
+#include <av_planning_msgs/VehicleStateCubicSpline.h>
 #include <geometry_msgs/Twist.h>
+#include <std_msgs/Float64MultiArray.h>
 #include <lattice_trajectory_gen/libtraj_motion_model.h>
 #include <lattice_trajectory_gen/libtraj_gen_common.h>
 
 namespace common =  libtraj_gen_common;
 namespace libmm =  libtraj_motion_model;
 
-void curvatureCb(const common::CubicSpline&);
-void startStateCb(const lattice_trajectory_gen::VehicleStateCubicSpline&);
+void curvatureCb(const std_msgs::Float64MultiArray&);
+void startStateCb(const av_planning_msgs::VehicleStateCubicSpline&);
 
 double start_time = 0.0;
 bool new_state = false;
@@ -18,16 +19,16 @@ double goal_vel = 0;
 common::VehicleState veh_current_state;
 common::CubicSpline current_curvature;
 
-void curvatureCb(const common::CubicSpline& msg)
+void curvatureCb(const std_msgs::Float64MultiArray& msg)
 {
-  curvature.p0 = msg.data[0];
-  curvature.p1 = msg.data[1];
-  curvature.p2 = msg.data[2];
-  curvature.p3 = msg.data[3];
-  curvature.length = msg.data[4];
+  current_curvature.p0 = msg.data[0];
+  current_curvature.p1 = msg.data[1];
+  current_curvature.p2 = msg.data[2];
+  current_curvature.p3 = msg.data[3];
+  current_curvature.s = msg.data[4];
 }
 
-void startStateCb(const lattice_trajectory_gen::VehicleStateCubicSpline& msg)
+void startStateCb(const av_planning_msgs::VehicleStateCubicSpline& msg)
 {
   veh_current_state.x = msg.x;
   veh_current_state.y = msg.y;
@@ -52,21 +53,23 @@ int main(int argc, char** argv)
   ros::Subscriber sub_curvature = nh.subscribe("/curvature",10,curvatureCb);
   float rate = 15;
   geometry_msgs::Twist twist_cmd;
-  ros::rate loop_rate(rate);
+  ros::Rate loop_rate(rate);
+  common::VehicleState temp_veh_state;
 
   while(ros::ok())
   {
     ros::spinOnce();
+
     if (new_state)
     {
       double elapsed_time = ros::Time::now().toSec() - start_time;
-      common::VehicleState temp_veh_state = libmm::getNextState(current_state,goal_vel, 1/rate, curvature,elapsed_time);
+      temp_veh_state = libmm::getNextState(veh_current_state,goal_vel, 1/rate, current_curvature,elapsed_time);
       new_state = false;
 
     }
-    twist_cmd.twist.linear.x = temp_veh_state.vel;
-    twist_cmd.twist.angular.z = temp_veh_state.vel*temp_veh_state.kappa;
-    pub_cmd_vel.advertise(twist_cmd);
+    twist_cmd.linear.x = temp_veh_state.vel;
+    twist_cmd.angular.z = temp_veh_state.vel*temp_veh_state.kappa;
+    pub_cmd_vel.publish(twist_cmd);
     loop_rate.sleep();
   }
 
