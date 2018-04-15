@@ -80,11 +80,21 @@ int main(int argc, char** argv)
   {
     ros::spinOnce(); // update pose if needed 
     //if (!poseHasChanged(start)); // will have to implement this in a while 
+    if (current_x == 0)
+    {
+      loop_rate.sleep();
+      continue;
+    }
 
     start = updateStartPose();
     start.vel = current_vel;
+    if (start.vel == 0)
+      start.vel = 0.1;
     start.kappa = current_omega/start.vel;
+    if (current_omega < 0.1)
+      start.kappa = 0.0;
 
+    ROS_INFO_STREAM(" -- BEGINNNING WITH START POSE --- "<<start);
     common::CubicSpline curvature = common::initCurvature(start,goal);
     ROS_INFO_STREAM(" -- BEGINNING FIRST INTEGRATION WITH SPLINE "<<curvature<<"--\n");
     common::VehicleState integrated_state = libmm::motionModel(start,goal,dt,curvature);
@@ -110,6 +120,7 @@ int main(int argc, char** argv)
     }
     if (converged)
     {
+      ROS_INFO(" -- CONVERGED --");
       // publish relevant topics 
       temp_veh_state.x = start.x; temp_veh_state.y = start.y; temp_veh_state.theta = start.theta; temp_veh_state.vel = start.vel; temp_veh_state.kappa = start.kappa;temp_veh_state.goal_vel = goal.vel;
       pub_start_state.publish(temp_veh_state);

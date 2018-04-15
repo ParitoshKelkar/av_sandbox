@@ -68,6 +68,7 @@ int main(int argc, char** argv)
 
     }
     twist_cmd.linear.x = temp_veh_state.vel;
+    ROS_INFO_STREAM("VEL NEEDED "<<twist_cmd.linear.x);
     twist_cmd.angular.z = temp_veh_state.vel*temp_veh_state.kappa;
     pub_cmd_vel.publish(twist_cmd);
     loop_rate.sleep();
