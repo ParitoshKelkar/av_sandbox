@@ -13,7 +13,9 @@
 namespace common =  libtraj_gen_common;
 namespace libmm =  libtraj_motion_model;
 
-common::VehicleState goal(26+6,70+4,0.0,0.2,0.1); 
+common::VehicleState global_waypoint(24+6,70+4,0.0,0.2,0.1); 
+common::VehicleState start_global(24,63,0.0,0.0,0.1); 
+
 bool pose_reached = false;
 double current_x, current_y, current_theta, current_vel, current_omega;
 
@@ -24,7 +26,7 @@ common::VehicleState updateStartPose();
 void amclPoseCb(const geometry_msgs::PoseWithCovarianceStamped& current_pose)
 {
   // take in the position and check for convergence only using that right now 
-  if (fabs(current_pose.pose.pose.position.x - goal.x) < 0.2 && fabs(current_pose.pose.pose.position.y - goal.y) < 0.2 )
+  if (fabs(current_pose.pose.pose.position.x - global_waypoint.x) < 0.2 && fabs(current_pose.pose.pose.position.y - global_waypoint.y) < 0.2 )
     pose_reached = true;
   current_x = current_pose.pose.pose.position.x;
   current_y = current_pose.pose.pose.position.y;
@@ -64,7 +66,9 @@ int main(int argc, char** argv)
   double rate = 15; // Hz
   ros::Rate loop_rate(rate);
 
-  common::VehicleState start(26,70,0,0,0.1);  // x,y,theta,kappa,vel
+  common::VehicleState start(0,0,0,0,0.1);  // x,y,theta,kappa,vel
+  common::VehicleState goal(6,4,0.1,0.2,0.1);
+
 
 
   ros::Subscriber sub_amcl_pose = nh.subscribe("/amcl_pose",10,amclPoseCb);
@@ -86,13 +90,17 @@ int main(int argc, char** argv)
       continue;
     }
 
-    start = updateStartPose();
+    common::VehicleState v_state_temp = updateStartPose();
+    goal.x = global_waypoint.x - v_state_temp.x;
+    goal.y = global_waypoint.y - v_state_temp.y;
+
     start.vel = current_vel;
     if (start.vel == 0)
       start.vel = 0.1;
     start.kappa = current_omega/start.vel;
     if (current_omega < 0.1)
       start.kappa = 0.0;
+    start.theta = current_theta;
 
     ROS_INFO_STREAM(" -- BEGINNNING WITH START POSE --- "<<start);
     common::CubicSpline curvature = common::initCurvature(start,goal);
