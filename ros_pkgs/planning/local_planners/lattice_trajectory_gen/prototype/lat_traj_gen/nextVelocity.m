@@ -1,12 +1,12 @@
 %generate velocity given the total path length and the approximate time taken  
 
 % known(s)
-tf = 7.2; % secs 
+tf = 17.2; % secs 
 v0 = 0;
-vf = 0;
+vf = 5;
 a0 = 0;
 af = 0;
-sf = 7.2; %mtrs
+sf = 17.2; %mtrs
 
 % matrix to be inverted 
 %A = [1 0 0 0; 0 0 0 0];

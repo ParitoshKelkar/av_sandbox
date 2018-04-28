@@ -70,7 +70,6 @@ int main(int argc, char** argv)
   common::VehicleState goal(6,4,0.1,0.2,0.1);
 
 
-
   ros::Subscriber sub_amcl_pose = nh.subscribe("/amcl_pose",10,amclPoseCb);
   ros::Subscriber sub_odom = nh.subscribe("/base_pose_ground_truth",10,odomCb);
 
@@ -80,93 +79,119 @@ int main(int argc, char** argv)
   std_msgs::Float64MultiArray curv_pub_array;
   curv_pub_array.data.resize(5);
 
-  while (ros::ok())
+/*
+ *  while (ros::ok())
+ *  {
+ *    ros::spinOnce(); // update pose if needed 
+ *    //if (!poseHasChanged(start)); // will have to implement this in a while 
+ *    if (current_x == 0)
+ *    {
+ *      loop_rate.sleep();
+ *      continue;
+ *    }
+ *
+ *    common::VehicleState v_state_temp = updateStartPose();
+ *    goal.x = global_waypoint.x - v_state_temp.x;
+ *    goal.y = global_waypoint.y - v_state_temp.y;
+ *
+ *    if (fabs(current_vel) < 0.001)
+ *      current_vel = 0;
+ *
+ *    start.vel = current_vel;
+ *    if (start.vel == 0)
+ *      start.vel = 0.1;
+ *    
+ *    start.kappa = current_omega/start.vel;
+ *    if (current_omega < 0.1)
+ *      start.kappa = 0.0;
+ *    if (fabs(current_theta) < 0.01)
+ *      current_theta = 0;
+ *
+ *    start.theta = current_theta;
+ *    start.theta = 0;
+ *    start.vel = 0.1;
+ *
+ *
+ *    ROS_INFO_STREAM(" -- BEGINNNING WITH START POSE --- "<<start);
+ *    common::CubicSpline curvature = common::initCurvature(start,goal);
+ *    ROS_INFO_STREAM(" -- BEGINNING FIRST INTEGRATION WITH SPLINE "<<curvature<<"--\n");
+ *    common::VehicleState integrated_state = libmm::motionModel(start,goal,dt,curvature);
+ *    ROS_INFO_STREAM("lattice_traj_gen::node state after motion model "<<integrated_state);
+ *    ROS_INFO(" - BEGINNING CORRECTIONS - ");
+ *    bool converged = false;
+ *    int converge_epochs = 0;
+ *    while( !converged && converge_epochs < 5)
+ *    {
+ *      common::CubicSpline delta_param = libmm::generateCorrection(start,goal,integrated_state,dt,curvature);
+ *      curvature.p1 = curvature.p1 - delta_param.p1;
+ *      curvature.p2 = curvature.p2 - delta_param.p2;
+ *      curvature.s = curvature.s - delta_param.s;
+ *
+ *      ROS_INFO_STREAM(" - new spline "<<curvature<<"-");
+ *      ROS_INFO("lattice_traj_gen::node running MM with adjusted curvature");
+ *      integrated_state = libmm::motionModel(start,goal,dt,curvature);
+ *      ROS_INFO_STREAM("lattice_traj_gen::node state after motion model "<<integrated_state);
+ *      ROS_INFO(" - END ITER_EPOCH %d -",converge_epochs);
+ *      ROS_INFO("\n");
+ *      converged = common::hasConverged(goal,integrated_state);
+ *      converge_epochs+=1;
+ *    }
+ *    if (converged)
+ *    {
+ *      ROS_INFO(" -- CONVERGED --");
+ *      // publish relevant topics 
+ *      temp_veh_state.x = start.x; temp_veh_state.y = start.y; temp_veh_state.theta = start.theta; temp_veh_state.vel = start.vel; temp_veh_state.kappa = start.kappa;temp_veh_state.goal_vel = goal.vel;
+ *      pub_start_state.publish(temp_veh_state);
+ *      curv_pub_array.data[0] = curvature.p0; curv_pub_array.data[1] = curvature.p1; curv_pub_array.data[2] = curvature.p2; curv_pub_array.data[3] = curvature.p3; curv_pub_array.data[4] = curvature.s;
+ *      pub_curvature.publish(curv_pub_array);
+ *    }
+ *
+ *    loop_rate.sleep();
+ *
+ *  }
+ */
+
+
+
+
+
+  //common::VehicleState start(0,0,0,0,0.1);  // x,y,theta,kappa,vel
+  //common::VehicleState goal(6,4,0.0,0.2,0.1); 
+
+
+
+  common::CubicSpline curvature = common::initCurvature(start,goal);
+
+
+  ROS_INFO_STREAM(" -- BEGINNING FIRST INTEGRATION WITH SPLINE "<<curvature<<"--\n");
+  common::VehicleState integrated_state = libmm::motionModel(start,goal,dt,curvature);
+  ROS_INFO_STREAM("lattice_traj_gen::node state after motion model "<<integrated_state);
+  ROS_INFO(" - BEGINNING CCRRECTIONS - ");
+  bool converged = false;
+  int converge_epochs = 0;
+
+  while( !converged && converge_epochs < 5)
   {
-    ros::spinOnce(); // update pose if needed 
-    //if (!poseHasChanged(start)); // will have to implement this in a while 
-    if (current_x == 0)
-    {
-      loop_rate.sleep();
-      continue;
-    }
+    common::CubicSpline delta_param = libmm::generateCorrection(start,goal,integrated_state,dt,curvature);
+    curvature.p1 = curvature.p1 - delta_param.p1;
+    curvature.p2 = curvature.p2 - delta_param.p2;
+    curvature.s = curvature.s - delta_param.s;
 
-    common::VehicleState v_state_temp = updateStartPose();
-    goal.x = global_waypoint.x - v_state_temp.x;
-    goal.y = global_waypoint.y - v_state_temp.y;
-
-    start.vel = current_vel;
-    if (start.vel == 0)
-      start.vel = 0.1;
-    start.kappa = current_omega/start.vel;
-    if (current_omega < 0.1)
-      start.kappa = 0.0;
-    start.theta = current_theta;
-
-    ROS_INFO_STREAM(" -- BEGINNNING WITH START POSE --- "<<start);
-    common::CubicSpline curvature = common::initCurvature(start,goal);
-    ROS_INFO_STREAM(" -- BEGINNING FIRST INTEGRATION WITH SPLINE "<<curvature<<"--\n");
-    common::VehicleState integrated_state = libmm::motionModel(start,goal,dt,curvature);
+    ROS_INFO_STREAM(" - new spline "<<curvature<<"-");
+    ROS_INFO("lattice_traj_gen::node running MM with adjusted curvature");
+    integrated_state = libmm::motionModel(start,goal,dt,curvature);
     ROS_INFO_STREAM("lattice_traj_gen::node state after motion model "<<integrated_state);
-    ROS_INFO(" - BEGINNING CORRECTIONS - ");
-    bool converged = false;
-    int converge_epochs = 0;
-    while( !converged && converge_epochs < 5)
-    {
-      common::CubicSpline delta_param = libmm::generateCorrection(start,goal,integrated_state,dt,curvature);
-      curvature.p1 = curvature.p1 - delta_param.p1;
-      curvature.p2 = curvature.p2 - delta_param.p2;
-      curvature.s = curvature.s - delta_param.s;
-
-      ROS_INFO_STREAM(" - new spline "<<curvature<<"-");
-      ROS_INFO("lattice_traj_gen::node running MM with adjusted curvature");
-      integrated_state = libmm::motionModel(start,goal,dt,curvature);
-      ROS_INFO_STREAM("lattice_traj_gen::node state after motion model "<<integrated_state);
-      ROS_INFO(" - END ITER_EPOCH %d -",converge_epochs);
-      ROS_INFO("\n");
-      converged = common::hasConverged(goal,integrated_state);
-      converge_epochs+=1;
-    }
-    if (converged)
-    {
-      ROS_INFO(" -- CONVERGED --");
-      // publish relevant topics 
-      temp_veh_state.x = start.x; temp_veh_state.y = start.y; temp_veh_state.theta = start.theta; temp_veh_state.vel = start.vel; temp_veh_state.kappa = start.kappa;temp_veh_state.goal_vel = goal.vel;
-      pub_start_state.publish(temp_veh_state);
-      curv_pub_array.data[0] = curvature.p0; curv_pub_array.data[1] = curvature.p1; curv_pub_array.data[2] = curvature.p2; curv_pub_array.data[3] = curvature.p3; curv_pub_array.data[4] = curvature.s;
-      pub_curvature.publish(curv_pub_array);
-    }
-
-    loop_rate.sleep();
+    ROS_INFO(" - END ITER_EPOCH %d -",converge_epochs);
+    ROS_INFO("\n");
+    converged = common::hasConverged(goal,integrated_state);
+    converge_epochs+=1;
 
   }
-
-
-
-
-
-  //if (converged)
-  //{
-
-    //// publish to rviz 
-    //// publish corresponding twist messages 
-    //double elapsed_time = 0;
-    //double horizon = curvature.s/goal.vel;
-    //common::VehicleState current_state;
-    //double prev_time;
-    //while(!pose_reached)
-    //{
-      //ros::spinOnce();
-
-      //current_state = libmm::getNextState(current_state,goal,dt,curvature,elapsed_time);
-      //elapsed_time+= dt;
-      //current_state.x = current_x; //Cb
-      //current_state.y = current_y; //Cb
-
-    //}
-
-
-  //}
-
+  if (converged)
+  {
+    ROS_INFO(" -- CONVERGED -- ");
+    ROS_INFO_STREAM("INTEGRATED STATE "<<integrated_state);
+  }
 
   return 0;
 }

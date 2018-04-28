@@ -14,7 +14,7 @@ goal.sx = 6;
 goal.sy = 4;
 goal.theta = 0;
 goal.kappa = 0.2;
-goal.vel = 0.1;
+goal.vel = 2;
 
 %goal.sx = 0.5;
 %goal.sy = 0.5;

@@ -35,9 +35,6 @@ state_hist = [current_state];
 
     vel = getNextVelocity(current_state, goal, dt,T,p,dist_covered); 
 
-    if (vel > 0.12)
-      disp(vel)
-    end
 
     next_state_dt.sx = sx;
     next_state_dt.sy = sy;
@@ -48,9 +45,6 @@ state_hist = [current_state];
 
     next_state_dt = responseToControls(current_state,next_state_dt,dt);
 
-    if (next_state_dt.vel > 0.12)
-      disp(vel)
-    end
 
     %next_state_dt.vel = 0.1;
     current_state = next_state_dt;
