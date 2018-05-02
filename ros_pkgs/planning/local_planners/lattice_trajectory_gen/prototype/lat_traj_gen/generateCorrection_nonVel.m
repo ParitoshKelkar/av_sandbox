@@ -1,21 +1,21 @@
-function delta_param = generateCorrection(start,goal,integrated_state,dt,p_init)
+function delta_param = generateCorrection_nonVel(start,goal,integrated_state,dt,p_init)
 
 % approx jacobian 
 % the jacobian is of the form - 4 x 4; the state doesnt include - following nagy kelly 
 % verify mc naughton implementation - kappa not included 
-%a_perturb = 0.001;
-a_perturb = 0.01;
-b_perturb = 0.01;
-%b_perturb = 0.001;
+a_perturb = 0.001;
+%a_perturb = 0.01;
+%b_perturb = 0.01;
+b_perturb = 0.001;
 c_perturb = 0.001;
-%s_perturb = 0.01;
-s_perturb = 0.30;
+s_perturb = 0.01;
+%s_perturb = 0.30;
 
 J = zeros(3,3);
 % second parameter col 
 p_a_perturb = p_init;
 p_a_perturb.kappa_1 = p_a_perturb.kappa_1 + a_perturb;
-col1_state = motionModel(start,goal,dt,p_a_perturb);
+col1_state = computeIntegrals(start,p_a_perturb,goal);
 %J(:,1) = (1/a_perturb)*[col1_state.sx;col1_state.sy;col1_state.theta;col1_state.kappa];
 delta_J_state = [integrated_state.sx - col1_state.sx; integrated_state.sy - col1_state.sy; integrated_state.theta - col1_state.theta];
 J(:,2) = (1/a_perturb)*delta_J_state;
@@ -24,7 +24,7 @@ J(:,2) = (1/a_perturb)*delta_J_state;
 % third parameter col 
 p_b_perturb = p_init;
 p_b_perturb.kappa_2 = p_b_perturb.kappa_2 + b_perturb;
-col2_state = motionModel(start,goal,dt,p_b_perturb);
+col2_state = computeIntegrals(start,p_b_perturb,goal);
 %J(:,2) = (1/b_perturb)*[col2_state.sx;col2_state.sy;col2_state.theta;col2_state.kappa];
 delta_J_state = [integrated_state.sx - col2_state.sx; integrated_state.sy - col2_state.sy; integrated_state.theta - col2_state.theta];
 J(:,3) = (1/b_perturb)*delta_J_state;
@@ -42,7 +42,7 @@ J(:,3) = (1/b_perturb)*delta_J_state;
 % first parameter col 
 p_s_perturb = p_init;
 p_s_perturb.s = p_s_perturb.s + s_perturb;
-col4_state = motionModel(start,goal,dt,p_s_perturb);
+col4_state = computeIntegrals(start,p_s_perturb,goal);
 %J(:,4) = (1/s_perturb)*[col4_state.sx;col4_state.sy;col4_state.theta;col4_state.kappa];
 %J(:,4) = (1/s_perturb)*[col4_state.sx;col4_state.sy;col4_state.theta;];
 delta_J_state = [integrated_state.sx - col4_state.sx; integrated_state.sy - col4_state.sy; integrated_state.theta - col4_state.theta];

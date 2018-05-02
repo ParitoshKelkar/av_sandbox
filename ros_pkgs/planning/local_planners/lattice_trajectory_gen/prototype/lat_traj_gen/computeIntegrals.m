@@ -10,7 +10,7 @@ function [state] = computeIntegrals(start, init_curvature, goal)
  [state.theta,state.kappa] = integrateThetaKappa(a,b,c,d,s);
 
  % approximate fresnel 
- [state.x,state.y]  = approximateFresnel(start,init_curvature,goal);
+ [state.sx,state.sy]  = approximateFresnel(start,init_curvature,goal);
 
 
 

@@ -9,14 +9,13 @@ function [x,y] = approximateFresnel(start, init_curvature, goal)
  x_integrand = 0;
  y_integrand = 0;
 
- integrand_split = 15; 
+ integrand_split = 20; 
  deltaLength = s/integrand_split;
 
  fresnel_iter = 1;
 
  while (fresnel_iter < integrand_split )
 
-   disp(fresnel_iter);
    if (mod(fresnel_iter,2) == 0)
      multiplier = 2;
    else

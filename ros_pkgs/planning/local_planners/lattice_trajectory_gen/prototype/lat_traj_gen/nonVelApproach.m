@@ -21,12 +21,18 @@ goal.kappa = 0.2;
 goal.vel = 2;
 
 
-% tunable segment break up param - for approximating fresnel
-segmentFresnel = 10;
 
 init_curvature = initKellyCurvature(start,goal);
+integrated_state = computeIntegrals(start,init_curvature,goal);
 
-integratedState = computeIntegrals(start,init_curvature,goal);
-
-
-
+% generate correction 
+dt = 0.1; % not actually used in the function
+disp('Generating Correction');
+param = generateCorrection_nonVel(start,goal,integrated_state,dt,init_curvature);
+p.kappa_0 = start.kappa;
+p.kappa_1 = init_curvature.kappa_1 + param(2);
+p.kappa_2 = init_curvature.kappa_2 + param(3);
+p.kappa_3 = goal.kappa;
+p.s = init_curvature.s+ param(1);
+new_state = computeIntegrals(start,p,goal);
+disp('Done Correction');
