@@ -4,18 +4,19 @@
 #include <wp_creator/WaypointVector.h>
 #include <wp_creator/WaypointType.h>
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
+#include <nav_msgs/Odometry.h>
 #include <geometry_msgs/Point.h>
 #include <Eigen/Dense>
 #include <visualization_msgs/Marker.h>
 
 float current_x, current_y, current_theta;
 bool recieved_pose = false;
-void gtPoseCb(const geometry_msgs::PoseWithCovarianceStamped&);
+void gtPoseCb(const nav_msgs::Odometry&);
 wp_creator::WaypointVector generateWaypointsInWorldFrame(float,float);
 visualization_msgs::Marker generateVizMarker(wp_creator::WaypointVector);
 
 
-void gtPoseCb(const geometry_msgs::PoseWithCovarianceStamped& msg)
+void gtPoseCb(const nav_msgs::Odometry& msg)
 {
   // take in the position and check for convergence only using that right now 
   current_x = msg.pose.pose.position.x;
@@ -25,6 +26,7 @@ void gtPoseCb(const geometry_msgs::PoseWithCovarianceStamped& msg)
   double roll,pitch,yaw;
   m.getRPY(roll,pitch,yaw);
   current_theta = yaw;
+  recieved_pose = true;
 }
 
 visualization_msgs::Marker generateVizMarker(wp_creator::WaypointVector wp_vec)
@@ -78,8 +80,8 @@ wp_creator::WaypointVector generateWaypointsInWorldFrame(float resolution, float
   temp_wp.header.frame_id = "map";
   for (int iter = 1; iter <=num_wp; iter++)
   {
-    float x_offset = iter*resolution + current_x; // not handling negative X etc 
-    p(0) = x_offset; p(1) = current_y;
+    float x_offset = iter*resolution; // not handling negative X etc 
+    p(0) = x_offset; p(1) = 0;
     p_global_frame = H*p;
 
     temp_wp.ID = wp_id; wp_id++; 
@@ -102,18 +104,33 @@ int main(int argc, char** argv)
   ros::Subscriber sub_pose = nh.subscribe("/base_pose_ground_truth",10,gtPoseCb);
   ros::Publisher pub_def_wps = nh.advertise<wp_creator::WaypointVector>("/default_waypoints",10);
   ros::Publisher pub_viz_def_wps = nh.advertise<visualization_msgs::Marker>("/viz_default_waypoints",10);
+  ros::Rate loop_rate(1);
 
 
-  while(!recieved_pose)
+  while(!recieved_pose && ros::ok())
+  {
+    ros::spinOnce();
     ROS_WARN_THROTTLE(2,"default_wp_loader::WAITING FOR AMCL POSE");
+    loop_rate.sleep();
+
+  }
 
   ROS_INFO("default_wp_loader::Recieved Pose, generating points");
 
   float spacing = 5;
   float num_wp = 30;
   wp_creator::WaypointVector wp_vec = generateWaypointsInWorldFrame(spacing,num_wp);
-  pub_def_wps.publish(wp_vec);
+  visualization_msgs::Marker viz_marker = generateVizMarker(wp_vec);
+  ROS_INFO("default_wp_loader:: Calculated Points");
+  ROS_INFO("default_wp_loader::Publishing to Rviz");
 
-  pub_viz_def_wps.publish(generateVizMarker(wp_vec));
+  while(ros::ok())
+  {
+    pub_def_wps.publish(wp_vec);
+    pub_viz_def_wps.publish(viz_marker);
+    loop_rate.sleep();
+  }
+
+
   return 0;
 }
