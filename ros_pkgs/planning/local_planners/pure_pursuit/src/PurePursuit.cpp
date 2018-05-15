@@ -57,6 +57,23 @@ float PurePursuit::getCurvature(const int target_wp)
 
 }
 
+
+geometry_msgs::Twist PurePursuit::getTwistCommand()
+{
+
+  geometry_msgs::Point closest_path_pt = getClosestPathPoint();
+  int target_wp = getTargetWaypoint(closest_path_pt);
+  float kappa = getCurvature(target_wp);
+
+  // assume const vel for now 
+  geometry_msgs::Twist twist_cmd;
+  twist_cmd.linear.x  = 5; 
+  twist_cmd.angular.z = kappa*5;
+
+  return twist_cmd;
+
+}
+
 int PurePursuit::getTargetWaypoint(geometry_msgs::Point p)
 {
 

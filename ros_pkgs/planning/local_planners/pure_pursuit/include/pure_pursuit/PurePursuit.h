@@ -84,6 +84,9 @@ private:
   * @throws Exception
   */
   float calculateEucDist(std::pair<float,float>,std::pair<float,float>);
+
+
+
   
 
 public:
