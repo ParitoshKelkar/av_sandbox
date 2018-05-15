@@ -10,7 +10,11 @@
 #define PUREPURSUIT_H
 
 #include <iostream>
+#include <math.h>
+#include <Eigen/Dense>
+
 #include <ros/ros.h>
+#include <tf/transform_listener.h>
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
 #include <geometry_msgs/Point.h>
 #include <wp_creator/WaypointVector.h>
@@ -67,6 +71,19 @@ private:
   * @throws Exception
   */
   float getCurvature(const int);
+
+
+  /**
+  * @brief  ** self explanatory **
+  *
+  * @param  std::pair<float,float>
+  *         std::pair<float,float>
+  *
+  * @return float
+  * 
+  * @throws Exception
+  */
+  float calculateEucDist(std::pair<float,float>,std::pair<float,float>);
   
 
 public:
