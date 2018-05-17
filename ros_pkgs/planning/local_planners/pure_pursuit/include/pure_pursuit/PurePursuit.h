@@ -20,6 +20,7 @@
 #include <wp_creator/WaypointVector.h>
 #include <wp_creator/WaypointType.h>
 #include <nav_msgs/Odometry.h>
+#include <visualization_msgs/Marker.h>
 
 class PurePursuit
 {
@@ -27,12 +28,41 @@ private:
 
   wp_creator::WaypointVector waypoints_;
   geometry_msgs::PoseWithCovarianceStamped current_pose_;
+  double current_yaw_;
   int current_target_wp_;
   float lookahead_dist_th_;
+  ros::NodeHandle nh_;
+
+  ros::Publisher pub_viz_circle_pp_;
   
 
-  void currentPoseCb(const nav_msgs::Odometry&)
-  void currentWayPtCb(const wp_creator::WaypointVector&);
+
+
+  /**
+  * @brief  uses known vehicle pose in global frame to make conversion 
+  *
+  * @param  double& - x_result
+  *         double& - y_result
+  *         double  - x(veh_frame)
+  *         double - y(veh_frame)
+  *
+  * @return void
+  * 
+  * @throws Exception
+  */
+  void vehicleToGlobalFrame(double&, double&, double, double);
+
+
+  /**
+  * @brief  calculate and publish circle marker to viz
+  *
+  * @param  int - the target waypoint 
+  *
+  * @return void
+  * 
+  * @throws Exception
+  */
+  void visualizeCircleTraj(int);
   
 
   /**
@@ -91,6 +121,7 @@ private:
 
 public:
   PurePursuit();
+  PurePursuit(ros::NodeHandle n);
   virtual ~PurePursuit();
 
   /**
@@ -104,6 +135,10 @@ public:
   * @throws Exception
   */
   geometry_msgs::Twist getTwistCommand();
+
+  // subscribers to made public 
+  void currentPoseCb(const nav_msgs::Odometry&);
+  void currentWayPtCb(const wp_creator::WaypointVector&);
 };
 
 #endif /* PUREPURSUIT_H */
