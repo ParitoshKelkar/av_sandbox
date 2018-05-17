@@ -17,8 +17,7 @@
  *   * Neither the name of Dataspeed Inc. nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
- *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
  *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
@@ -153,10 +152,21 @@ void TwistControllerNode::controlCallback(const ros::TimerEvent& event)
     if (cfg_.pub_steering) {
       pub_steering_.publish(steering_cmd);
     }
+
+    prius_msgs::Control p_control;
+    p_control.throttle = throttle_cmd.pedal_cmd;
+    p_control.steer = steering_cmd.steering_wheel_angle_cmd;
+
+    p_control.shift_gears = 2;
+
+    pub_control_.publish(p_control);
   } else {
     speed_pid_.resetIntegrator();
     accel_pid_.resetIntegrator();
   }
+
+
+  
 }
 
 void TwistControllerNode::reconfig(ControllerConfig& config, uint32_t level)

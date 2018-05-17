@@ -124,6 +124,8 @@ public:
   PurePursuit(ros::NodeHandle n);
   virtual ~PurePursuit();
 
+  bool wp_set, pose_set;
+
   /**
   * @brief  serves as the main func that
   *         processess all the ips

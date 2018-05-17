@@ -4,6 +4,10 @@ PurePursuit::PurePursuit()
 {
   current_target_wp_ = -1;
   lookahead_dist_th_ = 15; // mtrs- will be variable on speed 
+  current_yaw_ = 0 ;
+
+  wp_set = false; 
+  pose_set = false;
 }
 
 PurePursuit::PurePursuit(ros::NodeHandle n)
@@ -14,6 +18,9 @@ PurePursuit::PurePursuit(ros::NodeHandle n)
   nh_ = n;
   pub_viz_circle_pp_ = nh_.advertise<visualization_msgs::Marker>("/pp_circle",10);
   current_yaw_ = 0 ;
+
+  wp_set = false; 
+  pose_set = false;
 
 }
 
@@ -27,11 +34,15 @@ void PurePursuit::currentPoseCb(const nav_msgs::Odometry& msg)
   double roll,pitch,theta;
   m.getRPY(roll,pitch,theta);
   current_yaw_ = theta;
+
+  pose_set = true;
 }
 
 void PurePursuit::currentWayPtCb(const wp_creator::WaypointVector& msg)
 {
   waypoints_ = msg;
+  ROS_INFO("WAYPOINTS SET");
+  wp_set = true;
 }
 
 
@@ -73,6 +84,7 @@ float PurePursuit::getCurvature(const int target_wp)
 
 geometry_msgs::Twist PurePursuit::getTwistCommand()
 {
+  ROS_INFO("PurePursuit::getTWistCommand");
   geometry_msgs::Point closest_path_pt = getClosestPathPoint();
   int target_wp = getTargetWaypoint(closest_path_pt);
   float kappa = getCurvature(target_wp);
