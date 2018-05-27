@@ -76,7 +76,7 @@ include_directories(
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(lattice_traj_gen src/lattice_traj_gen.cpp)
-add_executable(throttle_gen src/throttle_gen.cpp)
+#add_executable(throttle_gen src/throttle_gen.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -93,9 +93,9 @@ add_executable(throttle_gen src/throttle_gen.cpp)
    ${catkin_LIBRARIES} libtraj_gen_common libtraj_motion_model
  )
 
- target_link_libraries(throttle_gen
-   ${catkin_LIBRARIES} libtraj_gen_common libtraj_motion_model
- )
+ #target_link_libraries(throttle_gen
+   #${catkin_LIBRARIES} libtraj_gen_common libtraj_motion_model
+ #)
 
 
 #############

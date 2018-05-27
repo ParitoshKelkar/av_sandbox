@@ -13,8 +13,8 @@
 namespace common =  libtraj_gen_common;
 namespace libmm =  libtraj_motion_model;
 
-common::VehicleState global_waypoint(24+6,70+4,0.0,0.2,0.1); 
-common::VehicleState start_global(24,63,0.0,0.0,0.1); 
+common::VehicleState global_waypoint(16,5,1.57,0.2,3); 
+//common::VehicleState start_global(0,0,0,0,3); 
 
 bool pose_reached = false;
 double current_x, current_y, current_theta, current_vel, current_omega;
@@ -66,8 +66,8 @@ int main(int argc, char** argv)
   double rate = 15; // Hz
   ros::Rate loop_rate(rate);
 
-  common::VehicleState start(0,0,0,0,0.1);  // x,y,theta,kappa,vel
-  common::VehicleState goal(6,4,0.1,0.2,0.1);
+  //common::VehicleState start(0,0,0,0,0.1);  // x,y,theta,kappa,vel
+  //common::VehicleState goal(6,4,0.1,0.2,0.1);
 
 
   ros::Subscriber sub_amcl_pose = nh.subscribe("/amcl_pose",10,amclPoseCb);
@@ -155,12 +155,13 @@ int main(int argc, char** argv)
 
 
 
-  //common::VehicleState start(0,0,0,0,0.1);  // x,y,theta,kappa,vel
-  //common::VehicleState goal(6,4,0.0,0.2,0.1); 
+  common::VehicleState start(0,0,0,0,3);  // x,y,theta,kappa,vel
+  common::VehicleState goal(16,4,1.57,0.2,3); 
 
 
 
-  common::CubicSpline curvature = common::initCurvature(start,goal);
+  //common::CubicSpline curvature = common::initCurvature(start,goal);
+  common::CubicSpline curvature(start.kappa,0,-0.2,goal.kappa,20); // use guess generated from matlab code 
 
 
   ROS_INFO_STREAM(" -- BEGINNING FIRST INTEGRATION WITH SPLINE "<<curvature<<"--\n");

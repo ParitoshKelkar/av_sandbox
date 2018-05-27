@@ -17,10 +17,6 @@ delta_perturb_state = [goal.sx - col1_state.sx; goal.sy - col1_state.sy; goal.th
 delta_J_state = delta_perturb_state - delta_integrated_state;
 J(:,1) = (1/s_perturb)*delta_J_state;
 
-p_s_neg_perturb = p_init;
-p_s_neg_perturb.s = p_init.s - s_perturb;
-col1_neg_state = motionModel(start,goal,dt,p_s_neg_perturb);
-
 
 % second parameter col 
 p_p1_perturb = makeCubicSpline(p_init.p0, p_init.p1 + p1_perturb, p_init.p2, p_init.p3, p_init.s);

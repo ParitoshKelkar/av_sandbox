@@ -52,7 +52,7 @@ y = [-10 : pos_resolution : 10];
 theta = [ -pi/2 : theta_resolution : pi/2];
 % use p0 and p3 from earlier 
 
-[x_comb, y_comb, theta_comb, k0_comb, kf_comb, v_comb] = ndgrid(x,y,theta,p0,p3,vel);
+[x_comb, y_comb, theta_comb, k0_comb, v_comb] = ndgrid(x,y,theta,p0,vel);
 all_target_states = [x_comb(:), y_comb(:), theta_comb(:), k0_comb(:), kf_comb(:), v_comb(:)];
 target_state_to_param_tracker = 1000*ones(size(all_target_states,1),2);
 
@@ -61,13 +61,11 @@ for iter_traj = 1 : size(sampledTrajList,2)
    
   for iter_LUT = 1 : size(all_target_states,1)
       
-	  % calc only position diff right now 
           if (all_target_states(iter_LUT,4) == sampledTrajList{iter_traj}.spline.p0 && ...
               all_target_states(iter_LUT,5) == sampledTrajList{iter_traj}.spline.p3 && ...
               all_target_states(iter_LUT,6) == sampledTrajList{iter_traj}.final_state.vel)
 
-              trajScore = sqrt( (all_target_states(iter_LUT,1) - sampledTrajList{iter_traj}.final_state.sx)^2 + ...
-              (all_target_states(iter_LUT,2) - sampledTrajList{iter_traj}.final_state.sy)^2 );
+              trajScore = calcTrajScoreLUT([all_target_states(iter_LUT,1), all_target_states(iter_LUT,2), all_target_states(iter_LUT,3)], sampledTrajList{iter_traj}.final_state);
               if trajScore < target_state_to_param_tracker(iter_LUT,2)
                       target_state_to_param_tracker(iter_LUT,1) = iter_traj;
                       target_state_to_param_tracker(iter_LUT,2) = trajScore;

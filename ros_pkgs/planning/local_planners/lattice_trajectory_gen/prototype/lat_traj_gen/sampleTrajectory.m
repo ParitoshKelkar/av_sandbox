@@ -1,20 +1,13 @@
-function [next_state_dt,state_hist] = motionModel(start,goal,dt,p) 
-  
-vel = goal.vel; % const vel model
+function [final_state, state_hist] = sampleTrajectory(start,dt,p)
+ 
+vel = start.vel;
 current_state = start;
-horizon = p.s/goal.vel;
-ds = 0.1;
-num_steps = p.s/ds;
-dt = horizon/(num_steps); 
+horizon = p.s/vel;
 T = 0; iter = 0;
 dist_covered = 0;
 state_hist = [current_state];
-T = dt;
 
-  while (T <horizon) 
-
-
-    disp(iter);
+  while (T < horizon) 
 
     sx = current_state.sx;
     sy = current_state.sy;
@@ -26,15 +19,9 @@ T = dt;
     sx = sx + vel*cos(theta)*dt;
     sy = sy + vel*sin(theta)*dt;
     theta  = theta + kappa*dt*vel;
-    theta = normalizeAngle(theta,0);
     
     % get next curvature 
-    %kappa = getNextCurvatureFromCsv(iter+1);
     kappa = getNextCurvature(current_state,dt,T,p);
-    
-
-    % get next velocity command 
-    % const vel model 
 
     next_state_dt.sx = sx;
     next_state_dt.sy = sy;
@@ -47,17 +34,13 @@ T = dt;
     %next_state_dt = responseToControls(current_state,next_state_dt,dt);
 
 
-
     current_state = next_state_dt;
+    T = T + dt;
     state_hist =[state_hist;current_state];
     iter=iter+1;
-    T = T + dt;
    
 
   end
-  
-  disp("just finished motion model");
+  final_state = current_state;
 
 end
-
-
