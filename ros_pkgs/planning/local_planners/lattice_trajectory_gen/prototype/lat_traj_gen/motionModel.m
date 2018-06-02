@@ -14,7 +14,6 @@ T = dt;
   while (T <horizon) 
 
 
-    disp(iter);
 
     sx = current_state.sx;
     sy = current_state.sy;
@@ -56,7 +55,6 @@ T = dt;
 
   end
   
-  disp("just finished motion model");
 
 end
 

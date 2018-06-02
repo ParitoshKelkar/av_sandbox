@@ -10,7 +10,7 @@ J = zeros(3,3);
 
 delta_integrated_state = [goal.sx - integrated_state.sx; goal.sy - integrated_state.sy; goal.theta  - integrated_state.theta];
 % first parameter col 
-p_s_perturb = makeCubicSpline(p_init.p0, p_init.p1, p_init.p2,p_init.p3, p_init.s+s_perturb)
+p_s_perturb = makeCubicSpline(p_init.p0, p_init.p1, p_init.p2,p_init.p3, p_init.s+s_perturb);
 col1_state = motionModel(start,goal,dt,p_s_perturb);
 delta_perturb_state = [goal.sx - col1_state.sx; goal.sy - col1_state.sy; goal.theta  - col1_state.theta];
 
@@ -40,7 +40,6 @@ delta_state.sy  = goal.sy - integrated_state.sy;
 delta_state.theta  = goal.theta - integrated_state.theta;
 delta_state.kappa  = goal.kappa - integrated_state.kappa;
 
-disp(integrated_state);
 
 %delta_param = inv(J)*[delta_state.sx;delta_state.sy;delta_state.theta;delta_state.kappa];
 delta_param = -inv(J)*[delta_state.sx;delta_state.sy;delta_state.theta;];

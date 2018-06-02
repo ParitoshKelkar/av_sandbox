@@ -55,6 +55,17 @@ namespace libtraj_gen_common
       c_p = (4.5)*(2*p0 - 5*p1 + 4*p2 - p3)/pow(s,2);
       d_p = (-4.50)*(p0 - 3*p1 + 3*p2 - p3)/pow(s,3);
     }
+
+    void paramReset(double k0, double k1, double k2, double k3, double s_total)
+    {
+      p0 = k0; p1 = k1; p2 = k2; p3 = k3; s = s_total;
+      // equally spaced points for better stable parameterization 
+      a_p = p0;
+      b_p = (-0.5)*(11*p0 -18*p1 + 9*p2 -2*p3)/(s);
+      c_p = (4.5)*(2*p0 - 5*p1 + 4*p2 - p3)/pow(s,2);
+      d_p = (-4.50)*(p0 - 3*p1 + 3*p2 - p3)/pow(s,3);
+    }
+
   };
 
   struct VehicleState 

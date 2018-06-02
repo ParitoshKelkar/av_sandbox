@@ -52,14 +52,14 @@ y = [-10 : pos_resolution : 10];
 theta = [ -pi/2 : theta_resolution : pi/2];
 % use p0 and p3 from earlier 
 
-[x_comb, y_comb, theta_comb, k0_comb, v_comb] = ndgrid(x,y,theta,p0,vel);
-all_target_states = [x_comb(:), y_comb(:), theta_comb(:), k0_comb(:), kf_comb(:), v_comb(:)];
+[x_comb, y_comb, theta_comb, k0_comb,kf_comb v_comb] = ndgrid(x,y,theta,p0,p3,vel);
+all_target_states = [x_comb(:), y_comb(:), theta_comb(:), k0_comb(:), kf_comb(:),v_comb(:)];
 target_state_to_param_tracker = 1000*ones(size(all_target_states,1),2);
 
 % iterate over sampled traj and associate them with a table idx 
-for iter_traj = 1 : size(sampledTrajList,2)
+for iter_LUT = 1 : size(all_target_states,1)
    
-  for iter_LUT = 1 : size(all_target_states,1)
+  for iter_traj = 1 : size(sampledTrajList,2)
       
           if (all_target_states(iter_LUT,4) == sampledTrajList{iter_traj}.spline.p0 && ...
               all_target_states(iter_LUT,5) == sampledTrajList{iter_traj}.spline.p3 && ...
@@ -77,7 +77,39 @@ for iter_traj = 1 : size(sampledTrajList,2)
 
 end
 
+
+% now to optimize every traj in sampledTrajList to meet target end pt constraints 
+% iterate through target_state_to_param_tracker 
+disp("Optimizing");
+res = [];
+
+for iter = 1 : length(target_state_to_param_tracker)
+
+  if (target_state_to_param_tracker(iter,1) == 1000)
+    continue;
+  end
+  curvature = sampledTrajList{target_state_to_param_tracker(iter,1)}.spline;
+  start.sx = 0; start.sy = 0; start.theta = 0; start.kappa = all_target_states(iter,4); start.vel = all_target_states(iter,6);
+  goal.kappa = curvature.p3; goal.sx = all_target_states(iter,1);goal.sy =  all_target_states(iter,2); goal.theta = all_target_states(iter,3); goal.vel = all_target_states(iter,6);
+
+  [optimized_curvature,res_flag] = optimizeTraj(start,goal,curvature);
+
+  sampledTrajList{target_state_to_param_tracker(iter,1)}.spline = optimized_curvature;
+  if (res_flag == 1)
+    [final_state,state_hist] = sampleTrajectory(start,dt,optimized_curvature);
+    sampledTrajList{target_state_to_param_tracker(iter,1)}.final_state = final_state;
+    sampledTrajList{target_state_to_param_tracker(iter,1)}.state_hist = state_hist;
+  end
+
+  res = [res,res_flag];
+
+end
+
 % plotting 
 plotTargetStateSampledTraj;
+
+
+
+
 
 toc
