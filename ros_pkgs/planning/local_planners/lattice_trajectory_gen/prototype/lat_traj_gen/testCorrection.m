@@ -17,7 +17,7 @@ goal.vel = 3;
 dt = 0.1;
 
 % the initial guess is from LUT 
-init_curvature = makeCubicSpline(start.kappa,0,-0.2,goal.kappa,20);
+init_curvature = makeCubicSpline(start.kappa,0,0.0,goal.kappa,20);
 %init_curvature = makeCubicSpline(0.0,0,0.0,0,6);
 
 [integrated_state,state_hist] = motionModel(start,goal,dt,init_curvature);

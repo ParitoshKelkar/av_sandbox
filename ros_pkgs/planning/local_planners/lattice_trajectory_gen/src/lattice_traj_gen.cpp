@@ -156,12 +156,12 @@ int main(int argc, char** argv)
 
 
   common::VehicleState start(0,0,0,0,3);  // x,y,theta,kappa,vel
-  common::VehicleState goal(16,4,1.57,0.2,3); 
+  common::VehicleState goal(16,5,1.57,0.2,3); 
 
 
 
   //common::CubicSpline curvature = common::initCurvature(start,goal);
-  common::CubicSpline curvature(start.kappa,0,-0.2,goal.kappa,20); // use guess generated from matlab code 
+  common::CubicSpline curvature(start.kappa,0,0,goal.kappa,20); // use guess generated from matlab code 
 
 
   ROS_INFO_STREAM(" -- BEGINNING FIRST INTEGRATION WITH SPLINE "<<curvature<<"--\n");
@@ -174,12 +174,14 @@ int main(int argc, char** argv)
   while( !converged && converge_epochs < 5)
   {
     common::CubicSpline delta_param = libmm::generateCorrection(start,goal,integrated_state,dt,curvature);
-    curvature.p1 = curvature.p1 - delta_param.p1;
-    curvature.p2 = curvature.p2 - delta_param.p2;
-    curvature.s = curvature.s - delta_param.s;
+    double udpated_p1 = curvature.p1 + delta_param.p1;
+    double updated_p2 = curvature.p2 + delta_param.p2;
+    double updated_s = curvature.s + delta_param.s;
 
     ROS_INFO_STREAM(" - new spline "<<curvature<<"-");
     ROS_INFO("lattice_traj_gen::node running MM with adjusted curvature");
+    // remake curvature 
+    curvature.paramReset(start.kappa,udpated_p1, updated_p2, goal.kappa,updated_s);
     integrated_state = libmm::motionModel(start,goal,dt,curvature);
     ROS_INFO_STREAM("lattice_traj_gen::node state after motion model "<<integrated_state);
     ROS_INFO(" - END ITER_EPOCH %d -",converge_epochs);

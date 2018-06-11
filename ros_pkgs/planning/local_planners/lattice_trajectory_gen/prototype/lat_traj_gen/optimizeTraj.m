@@ -31,7 +31,7 @@ function [curvature,res] = optimizeTraj(start,goal,curvature)
     p.s =(curvature.s + param(1));
     p.p3 = goal.kappa;
 
-    if p.s < 0
+    if p.s < 0 || p.s > 100
       curvature = curv_original; 
       res = 0;
       break;

@@ -10,6 +10,7 @@ project(wp_creator)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
+  roslib
   std_msgs
   geometry_msgs
   message_generation
@@ -135,7 +136,8 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
- add_executable(default_wp_loader src/default_wp_loader.cpp)
+add_executable(default_wp_loader src/default_wp_loader.cpp)
+add_executable(wp_loader_node src/wp_loader_node.cpp src/waypoint_loader.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -146,11 +148,17 @@ include_directories(
 ## Add cmake target dependencies of the executable
 ## same as for the library above
  add_dependencies(default_wp_loader ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+ add_dependencies(wp_loader_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
 
 ## Specify libraries to link a library or executable target against
  target_link_libraries(default_wp_loader
    ${catkin_LIBRARIES}
  )
+
+target_link_libraries(wp_loader_node
+  ${catkin_LIBRARIES}
+)
 
 #############
 ## Install ##

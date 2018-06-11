@@ -44,15 +44,18 @@ disp("done sampling all trajectories for parameter ranges");
 
 
 % generate table for possible end targets
-pos_resolution = 15;
-theta_resolution = pi/2;
+pos_resolution = 10;
+theta_resolution = pi/4;
 
-x = [1 : pos_resolution : 25];
+x = [5 : pos_resolution : 25];
 y = [-10 : pos_resolution : 10];
-theta = [ -pi/2 : theta_resolution : pi/2];
+theta = [ -pi/4 : theta_resolution : pi/4];
 % use p0 and p3 from earlier 
 
-[x_comb, y_comb, theta_comb, k0_comb,kf_comb v_comb] = ndgrid(x,y,theta,p0,p3,vel);
+plot_vel = 6;
+plot_p0 = 0;
+
+[x_comb, y_comb, theta_comb, k0_comb,kf_comb v_comb] = ndgrid(x,y,theta,plot_p0,p3,plot_vel);
 all_target_states = [x_comb(:), y_comb(:), theta_comb(:), k0_comb(:), kf_comb(:),v_comb(:)];
 target_state_to_param_tracker = 1000*ones(size(all_target_states,1),2);
 
@@ -81,35 +84,42 @@ end
 % now to optimize every traj in sampledTrajList to meet target end pt constraints 
 % iterate through target_state_to_param_tracker 
 disp("Optimizing");
-res = [];
+res = zeros(1,length(target_state_to_param_tracker));
 
 for iter = 1 : length(target_state_to_param_tracker)
 
   if (target_state_to_param_tracker(iter,1) == 1000)
     continue;
   end
-  curvature = sampledTrajList{target_state_to_param_tracker(iter,1)}.spline;
-  start.sx = 0; start.sy = 0; start.theta = 0; start.kappa = all_target_states(iter,4); start.vel = all_target_states(iter,6);
-  goal.kappa = curvature.p3; goal.sx = all_target_states(iter,1);goal.sy =  all_target_states(iter,2); goal.theta = all_target_states(iter,3); goal.vel = all_target_states(iter,6);
 
-  [optimized_curvature,res_flag] = optimizeTraj(start,goal,curvature);
+  if (all_target_states(iter,6) == plot_vel && all_target_states(iter,4) == plot_p0) 
 
-  sampledTrajList{target_state_to_param_tracker(iter,1)}.spline = optimized_curvature;
-  if (res_flag == 1)
-    [final_state,state_hist] = sampleTrajectory(start,dt,optimized_curvature);
-    sampledTrajList{target_state_to_param_tracker(iter,1)}.final_state = final_state;
-    sampledTrajList{target_state_to_param_tracker(iter,1)}.state_hist = state_hist;
+    curvature = sampledTrajList{target_state_to_param_tracker(iter,1)}.spline;
+    start.sx = 0; start.sy = 0; start.theta = 0; start.kappa = all_target_states(iter,4); start.vel = all_target_states(iter,6);
+    goal.kappa = curvature.p3; goal.sx = all_target_states(iter,1);goal.sy =  all_target_states(iter,2); goal.theta = all_target_states(iter,3); goal.vel = all_target_states(iter,6);
+
+    %if (iter > 281)
+      %disp('here')
+    %end
+
+    [optimized_curvature,res_flag] = optimizeTraj(start,goal,curvature);
+
+    sampledTrajList{target_state_to_param_tracker(iter,1)}.spline = optimized_curvature;
+    if (res_flag == 1)
+      [final_state,state_hist] = sampleTrajectory(start,dt,optimized_curvature);
+      sampledTrajList{target_state_to_param_tracker(iter,1)}.final_state = final_state;
+      sampledTrajList{target_state_to_param_tracker(iter,1)}.state_hist = state_hist;
+    end
+
+    res(iter) = res_flag;
+
   end
 
-  res = [res,res_flag];
+
+  disp(iter)
 
 end
 
 % plotting 
 plotTargetStateSampledTraj;
-
-
-
-
-
 toc

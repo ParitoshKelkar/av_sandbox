@@ -29,7 +29,7 @@ void gtPoseCb(const nav_msgs::Odometry& msg)
   recieved_pose = true;
 }
 
-visualization_msgs::Marker generateVizMarker(wp_creator::WaypointVector wp_vec)
+visualization_msgs::Marker generateVizMarker(const wp_creator::WaypointVector wp_vec)
 {
   visualization_msgs::Marker marker; 
 
@@ -102,8 +102,8 @@ int main(int argc, char** argv)
 
   // get current pose of vehicle and publish 30 wps in front of it 
   ros::Subscriber sub_pose = nh.subscribe("/base_pose_ground_truth",10,gtPoseCb);
-  ros::Publisher pub_def_wps = nh.advertise<wp_creator::WaypointVector>("/default_waypoints",10);
-  ros::Publisher pub_viz_def_wps = nh.advertise<visualization_msgs::Marker>("/viz_default_waypoints",10);
+  ros::Publisher pub_def_wps = nh.advertise<wp_creator::WaypointVector>("/waypoints",10);
+  ros::Publisher pub_viz_def_wps = nh.advertise<visualization_msgs::Marker>("/viz_waypoints",10);
   ros::Rate loop_rate(1);
 
 
