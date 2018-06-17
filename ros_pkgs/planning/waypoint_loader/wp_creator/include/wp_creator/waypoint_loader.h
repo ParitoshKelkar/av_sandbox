@@ -29,10 +29,6 @@ private:
         bool initPrivateMembers();
 
 
-
-
-
-
 public:
         WaypointLoader();
         WaypointLoader(ros::NodeHandle);
