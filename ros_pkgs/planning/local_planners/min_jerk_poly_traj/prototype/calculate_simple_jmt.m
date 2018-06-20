@@ -42,7 +42,7 @@ function [frenet_path] = calculate_simple_jmt(start_frenet_state, goal_frenet_st
 
 end
 
-function vec = compute_1D_jmt(start_state, goal_state, t)
+function vec = compute_1D_jmt(start_state, goal_state, T)
   
   alpha0 = start(1); 
   alpha1 = start(2); 
@@ -55,12 +55,16 @@ function vec = compute_1D_jmt(start_state, goal_state, t)
   vec = [alpha3; alpha4; alpha5];
 
   B = [goal_state(1); goal_state(2); goal_state(3)];
-  C1 = alpha0 + alpha1*t + 0.5*alpha*(t^2);
-  C2 = alpha1 + alpha2*t;
+  C1 = alpha0 + alpha1*T + 0.5*alpha*(T^2);
+  C2 = alpha1 + alpha2*T;
   C3 = alpha2;
 
   B_new = B-[C1;C2;C3];
 
   vec = inv(A)*B_new;
 
+end
+
+function val = evaluate(coeffs,ti)
+  val = coeffs(1) + coeffs(2)*ti + coeffs(3)*(ti^2) + coeffs(4)*(ti^3)+coeffs(5)*(ti^4) + coeffs(6)*(ti^6);
 end
