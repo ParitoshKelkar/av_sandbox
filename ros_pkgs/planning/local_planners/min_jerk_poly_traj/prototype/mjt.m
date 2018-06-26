@@ -30,6 +30,36 @@ s = cumsum(s);
 [x_s,coeffs_x] = fit_1D(map_data(1:4,1),s(1:4));
 [y_s, coeffs_y] = fit_1D(map_data(1:4,2),s(1:4));
 
-% check xy-frenet conversion 
+
+% use goal on ref line 
+% current frenet state 
+current_frenet_state.s = 40;
+current_frenet_state.d = 10;
+
+current_frenet_state.s_dot = 10; % m/s 
+current_frenet_state.d_dot = 2; % m/s 
+
+current_frenet_state.s_ddot = 0; % m/s 
+current_frenet_state.d_ddot = 0; % m/s 
+
+
+goal_frenet_state.s = 50;
+goal_frenet_state.d = 0;
+
+goal_frenet_state.s_dot = 20; % m/s 
+goal_frenet_state.d_dot = 0; % m/s 
+
+goal_frenet_state.s_ddot = 0; % m/s 
+goal_frenet_state.d_ddot = 0; % m/s 
+
+frenet_path = calculate_simple_jmt(current_frenet_state, goal_frenet_state);
+
+
+% convert to cartesian frame 
+for iter_cnv = 1 : length(frenet_path.s)
+  frenet_path.x = [frenet_path.x, convertToCartesian(iter_cnv,frenet_path,map_data)]
+
+end
+
 
 
