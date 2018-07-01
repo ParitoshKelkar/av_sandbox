@@ -33,18 +33,18 @@ s = cumsum(s);
 
 % use goal on ref line 
 % current frenet state 
-current_frenet_state.s = 40;
-current_frenet_state.d = 10;
+current_frenet_state.s = 0;
+current_frenet_state.d = 1;
 
-current_frenet_state.s_dot = 10; % m/s 
-current_frenet_state.d_dot = 2; % m/s 
+current_frenet_state.s_dot = 20; % m/s 
+current_frenet_state.d_dot = 0; % m/s 
 
 current_frenet_state.s_ddot = 0; % m/s 
 current_frenet_state.d_ddot = 0; % m/s 
 
 
-goal_frenet_state.s = 50;
-goal_frenet_state.d = 0;
+goal_frenet_state.s = 45;
+goal_frenet_state.d = -1;
 
 goal_frenet_state.s_dot = 20; % m/s 
 goal_frenet_state.d_dot = 0; % m/s 
@@ -54,12 +54,24 @@ goal_frenet_state.d_ddot = 0; % m/s
 
 frenet_path = calculate_simple_jmt(current_frenet_state, goal_frenet_state);
 
+%frenet_path.s = linspace(0,80,80);
+%frenet_path.d = ones(1,80);
 
 % convert to cartesian frame 
-for iter_cnv = 1 : length(frenet_path.s)
-  frenet_path.x = [frenet_path.x, convertToCartesian(iter_cnv,frenet_path,map_data)]
+frenet_path.x = [];
+frenet_path.y = [];
 
+for iter_cnv = 1 : length(frenet_path.s)
+  [x_new, y_new] = convertToCartesian(frenet_path.s(iter_cnv), frenet_path.d(iter_cnv), coeffs_x, coeffs_y);
+  frenet_path.x = [frenet_path.x; x_new];
+  frenet_path.y = [frenet_path.y; y_new];
 end
 
+
+
+% simple plot 
+plot(x_s, y_s, 'or','LineWidth',3);
+hold on
+plot(frenet_path.x, frenet_path.y, 'og','LineWidth',3);
 
 
