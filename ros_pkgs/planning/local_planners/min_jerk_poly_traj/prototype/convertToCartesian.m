@@ -3,8 +3,8 @@ function [x_new,y_new] = convertToCartesian(s,d, coeff_xs, coeff_ys)
   % first calculate ref x and ref y 
   % for 's' and 'd=0' coordinates 
 
-  rx = evaluate_poly(1,2,coeff_xs,s,2);
-  ry = evaluate_poly(2,2,coeff_ys,s,2);
+  rx = evaluate_poly(coeff_xs,s);
+  ry = evaluate_poly(coeff_ys,s);
 
   % calculate component of d in global cartesian frame 
 
